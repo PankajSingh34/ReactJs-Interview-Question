@@ -29,26 +29,32 @@ Here you'll find **90+ comprehensive React.js interview questions and answers** 
 ## 📚 Table of Contents
 
 1. **[React Fundamentals](#react-js-interview-questions)** (Questions 1-52)
+
    - Basic concepts, components, hooks, lifecycle methods
    - State management, props, JSX, Virtual DOM
 
 2. **[React 19 & Modern Features](#react-19-features--modern-react)** (Questions 79-83)
+
    - New `use()` hook, React Compiler, Server Components
    - App Router, Suspense, and concurrent features
 
 3. **[Performance & TypeScript](#performance-optimization--typescript)** (Questions 84-85)
+
    - Advanced memoization, useMemo, useCallback
    - TypeScript patterns, generic components, type safety
 
 4. **[Testing & Quality](#react-testing--best-practices)** (Question 86)
+
    - React Testing Library, custom hook testing
    - Component testing, mocking, accessibility testing
 
 5. **[Security & Accessibility](#react-security--accessibility)** (Questions 87-88)
+
    - XSS prevention, authentication, CSRF protection
    - Screen readers, ARIA, keyboard navigation
 
 6. **[Advanced Patterns](#advanced-react-patterns)** (Questions 89-90)
+
    - Compound components, render props
    - Custom hooks vs render props comparison
 
@@ -2642,22 +2648,25 @@ React 19 introduces several powerful features that enhance developer experience 
 - **`useActionState()`**: For managing server actions state
 
 **React Compiler (Automatic Memoization):**
+
 - Automatically optimizes your components without manual memoization
 - Eliminates the need for `useMemo`, `useCallback`, and `React.memo` in many cases
 
 **Server Components Enhancements:**
+
 - Improved Server Components with better hydration
 - Enhanced streaming capabilities
 - Better integration with frameworks like Next.js
 
 **Actions and Forms:**
+
 - Native support for Server Actions
 - Improved form handling with automatic pending states
 - Built-in error boundaries for async operations
 
 ```tsx
 // React 19 - use() hook example
-import { use } from 'react';
+import { use } from "react";
 
 interface User {
   id: number;
@@ -2666,19 +2675,19 @@ interface User {
 
 function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
   const user = use(userPromise);
-  
+
   return <div>Welcome, {user.name}!</div>;
 }
 
 // React 19 - useFormStatus() example
-import { useFormStatus } from 'react-dom';
+import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-  
+
   return (
     <button type="submit" disabled={pending}>
-      {pending ? 'Submitting...' : 'Submit'}
+      {pending ? "Submitting..." : "Submit"}
     </button>
   );
 }
@@ -2694,12 +2703,13 @@ function SubmitButton() {
 The `use()` hook is a new primitive in React 19 that can consume promises and context. Unlike other hooks, `use()` can be called conditionally.
 
 **Key Features:**
+
 - Can consume Promises and Context
 - Can be called conditionally (unlike other hooks)
 - Suspends the component while waiting for Promise resolution
 
 ```tsx
-import { use, Suspense } from 'react';
+import { use, Suspense } from "react";
 
 // TypeScript interfaces
 interface User {
@@ -2711,7 +2721,7 @@ interface User {
 // Consuming a Promise with use()
 function UserData({ userPromise }: { userPromise: Promise<User> }) {
   const user = use(userPromise);
-  
+
   return (
     <div>
       <h2>{user.name}</h2>
@@ -2721,25 +2731,28 @@ function UserData({ userPromise }: { userPromise: Promise<User> }) {
 }
 
 // Consuming Context with use()
-import { createContext } from 'react';
+import { createContext } from "react";
 
-const ThemeContext = createContext<'light' | 'dark'>('light');
+const ThemeContext = createContext<"light" | "dark">("light");
 
 function ThemeDisplay() {
   const theme = use(ThemeContext);
-  
+
   return <div>Current theme: {theme}</div>;
 }
 
 // Usage with conditional logic
-function ConditionalData({ shouldFetch, dataPromise }: {
+function ConditionalData({
+  shouldFetch,
+  dataPromise,
+}: {
   shouldFetch: boolean;
   dataPromise: Promise<any>;
 }) {
   if (!shouldFetch) {
     return <div>Not fetching data</div>;
   }
-  
+
   // This is allowed with use() but not with other hooks
   const data = use(dataPromise);
   return <div>{data.content}</div>;
@@ -2747,8 +2760,8 @@ function ConditionalData({ shouldFetch, dataPromise }: {
 
 // App component
 function App() {
-  const userPromise = fetch('/api/user').then(res => res.json());
-  
+  const userPromise = fetch("/api/user").then((res) => res.json());
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <UserData userPromise={userPromise} />
@@ -2767,6 +2780,7 @@ function App() {
 The React Compiler is an experimental feature in React 19 that automatically optimizes React components by adding memoization where beneficial, eliminating the need for manual optimization with `useMemo`, `useCallback`, and `React.memo`.
 
 **Key Benefits:**
+
 - **Automatic Optimization**: No manual memoization needed
 - **Better Performance**: Prevents unnecessary re-renders automatically
 - **Developer Experience**: Focus on logic, not performance optimization
@@ -2774,7 +2788,7 @@ The React Compiler is an experimental feature in React 19 that automatically opt
 
 ```tsx
 // Before React Compiler (Manual optimization)
-import { useMemo, useCallback, memo } from 'react';
+import { useMemo, useCallback, memo } from "react";
 
 interface User {
   id: number;
@@ -2788,17 +2802,21 @@ interface TodoListProps {
 
 const TodoList = memo(({ users, onUserSelect }: TodoListProps) => {
   const expensiveComputation = useMemo(() => {
-    return users.filter(user => user.name.length > 5)
-      .map(user => ({ ...user, displayName: user.name.toUpperCase() }));
+    return users
+      .filter((user) => user.name.length > 5)
+      .map((user) => ({ ...user, displayName: user.name.toUpperCase() }));
   }, [users]);
 
-  const handleUserClick = useCallback((userId: number) => {
-    onUserSelect(userId);
-  }, [onUserSelect]);
+  const handleUserClick = useCallback(
+    (userId: number) => {
+      onUserSelect(userId);
+    },
+    [onUserSelect]
+  );
 
   return (
     <div>
-      {expensiveComputation.map(user => (
+      {expensiveComputation.map((user) => (
         <div key={user.id} onClick={() => handleUserClick(user.id)}>
           {user.displayName}
         </div>
@@ -2810,8 +2828,9 @@ const TodoList = memo(({ users, onUserSelect }: TodoListProps) => {
 // After React Compiler (Automatic optimization)
 function TodoList({ users, onUserSelect }: TodoListProps) {
   // React Compiler automatically memoizes this computation
-  const expensiveComputation = users.filter(user => user.name.length > 5)
-    .map(user => ({ ...user, displayName: user.name.toUpperCase() }));
+  const expensiveComputation = users
+    .filter((user) => user.name.length > 5)
+    .map((user) => ({ ...user, displayName: user.name.toUpperCase() }));
 
   // React Compiler automatically memoizes this callback
   const handleUserClick = (userId: number) => {
@@ -2820,7 +2839,7 @@ function TodoList({ users, onUserSelect }: TodoListProps) {
 
   return (
     <div>
-      {expensiveComputation.map(user => (
+      {expensiveComputation.map((user) => (
         <div key={user.id} onClick={() => handleUserClick(user.id)}>
           {user.displayName}
         </div>
@@ -2831,6 +2850,7 @@ function TodoList({ users, onUserSelect }: TodoListProps) {
 ```
 
 **How to enable React Compiler:**
+
 ```bash
 # Install React Compiler
 npm install react-compiler-runtime
@@ -2847,6 +2867,7 @@ npm install --save-dev babel-plugin-react-compiler
 React Server Components (RSC) are components that run on the server and send their rendered output to the client. They enable better performance by reducing the JavaScript bundle size and improving initial page load.
 
 **Key Benefits:**
+
 - **Zero Bundle Size**: Server Components don't add to client bundle
 - **Direct Server Access**: Can directly access databases, file systems
 - **Automatic Code Splitting**: Only client components are bundled
@@ -2854,7 +2875,7 @@ React Server Components (RSC) are components that run on the server and send the
 
 ```tsx
 // Server Component (runs on server)
-import { db } from '@/lib/database';
+import { db } from "@/lib/database";
 
 interface BlogPost {
   id: string;
@@ -2867,13 +2888,13 @@ interface BlogPost {
 async function BlogList() {
   // Direct database access - only runs on server
   const posts: BlogPost[] = await db.posts.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   });
 
   return (
     <div className="blog-list">
       <h1>Latest Blog Posts</h1>
-      {posts.map(post => (
+      {posts.map((post) => (
         <article key={post.id}>
           <h2>{post.title}</h2>
           <p>By {post.author}</p>
@@ -2885,16 +2906,16 @@ async function BlogList() {
 }
 
 // Client Component (runs in browser)
-'use client';
+("use client");
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
 }
 
 function SearchBar({ onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -2920,7 +2941,7 @@ function BlogPage() {
     <div>
       {/* This runs on the client for interactivity */}
       <SearchBar onSearch={(query) => console.log(query)} />
-      
+
       {/* This runs on the server for data fetching */}
       <BlogList />
     </div>
@@ -2929,6 +2950,7 @@ function BlogPage() {
 ```
 
 **File Structure Example:**
+
 ```
 app/
 ├── layout.tsx          // Server Component
@@ -2951,6 +2973,7 @@ app/
 The App Router is a new routing system in Next.js 13+ that leverages React Server Components and provides a more intuitive file-based routing system.
 
 **Key Features:**
+
 - **File-based routing** with `app/` directory
 - **Layouts** and **Templates** for shared UI
 - **Server Components** by default
@@ -2959,11 +2982,11 @@ The App Router is a new routing system in Next.js 13+ that leverages React Serve
 
 ```tsx
 // app/layout.tsx - Root Layout (Server Component)
-import './globals.css';
+import "./globals.css";
 
 export const metadata = {
-  title: 'My App',
-  description: 'A Next.js 13+ application',
+  title: "My App",
+  description: "A Next.js 13+ application",
 };
 
 interface RootLayoutProps {
@@ -3005,13 +3028,15 @@ export default function BlogLayout({ children }: BlogLayoutProps) {
       <aside>
         <h2>Blog Sidebar</h2>
         <ul>
-          <li><a href="/blog/react">React Posts</a></li>
-          <li><a href="/blog/nextjs">Next.js Posts</a></li>
+          <li>
+            <a href="/blog/react">React Posts</a>
+          </li>
+          <li>
+            <a href="/blog/nextjs">Next.js Posts</a>
+          </li>
         </ul>
       </aside>
-      <div className="blog-content">
-        {children}
-      </div>
+      <div className="blog-content">{children}</div>
     </div>
   );
 }
@@ -3023,8 +3048,9 @@ interface BlogPostPageProps {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // This runs on the server
-  const post = await fetch(`https://api.example.com/posts/${params.slug}`)
-    .then(res => res.json());
+  const post = await fetch(`https://api.example.com/posts/${params.slug}`).then(
+    (res) => res.json()
+  );
 
   return (
     <article>
@@ -3045,7 +3071,7 @@ export default function Loading() {
 }
 
 // app/blog/[slug]/error.tsx - Error UI
-'use client';
+("use client");
 
 interface ErrorPageProps {
   error: Error;
@@ -3064,6 +3090,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 ```
 
 **Directory Structure:**
+
 ```
 app/
 ├── layout.tsx           // Root layout
@@ -3099,6 +3126,7 @@ app/
 Understanding when and how to use these optimization techniques is crucial for building performant React applications.
 
 **React.memo - Component Memoization:**
+
 ```tsx
 // TypeScript interface for props
 interface UserCardProps {
@@ -3112,8 +3140,8 @@ interface UserCardProps {
 
 // Memoized component - only re-renders when props change
 const UserCard = React.memo(({ user, onEdit }: UserCardProps) => {
-  console.log('UserCard rendered for:', user.name);
-  
+  console.log("UserCard rendered for:", user.name);
+
   return (
     <div className="user-card">
       <h3>{user.name}</h3>
@@ -3146,6 +3174,7 @@ const UserCardWithCustomComparison = React.memo(
 ```
 
 **useMemo - Value Memoization:**
+
 ```tsx
 interface Product {
   id: number;
@@ -3157,21 +3186,22 @@ interface Product {
 interface ProductListProps {
   products: Product[];
   filter: string;
-  sortBy: 'name' | 'price';
+  sortBy: "name" | "price";
 }
 
 function ProductList({ products, filter, sortBy }: ProductListProps) {
   // Expensive computation - only runs when dependencies change
   const filteredAndSortedProducts = useMemo(() => {
-    console.log('Computing filtered and sorted products');
-    
+    console.log("Computing filtered and sorted products");
+
     return products
-      .filter(product => 
-        product.name.toLowerCase().includes(filter.toLowerCase()) ||
-        product.category.toLowerCase().includes(filter.toLowerCase())
+      .filter(
+        (product) =>
+          product.name.toLowerCase().includes(filter.toLowerCase()) ||
+          product.category.toLowerCase().includes(filter.toLowerCase())
       )
       .sort((a, b) => {
-        if (sortBy === 'name') {
+        if (sortBy === "name") {
           return a.name.localeCompare(b.name);
         }
         return a.price - b.price;
@@ -3181,7 +3211,7 @@ function ProductList({ products, filter, sortBy }: ProductListProps) {
   // Memoized calculation
   const totalValue = useMemo(() => {
     return filteredAndSortedProducts.reduce(
-      (sum, product) => sum + product.price, 
+      (sum, product) => sum + product.price,
       0
     );
   }, [filteredAndSortedProducts]);
@@ -3189,7 +3219,7 @@ function ProductList({ products, filter, sortBy }: ProductListProps) {
   return (
     <div>
       <h2>Products (Total: ${totalValue.toFixed(2)})</h2>
-      {filteredAndSortedProducts.map(product => (
+      {filteredAndSortedProducts.map((product) => (
         <div key={product.id}>
           <h3>{product.name}</h3>
           <p>${product.price}</p>
@@ -3201,6 +3231,7 @@ function ProductList({ products, filter, sortBy }: ProductListProps) {
 ```
 
 **useCallback - Function Memoization:**
+
 ```tsx
 interface TodoListProps {
   todos: Array<{
@@ -3211,32 +3242,33 @@ interface TodoListProps {
 }
 
 function TodoList({ todos }: TodoListProps) {
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
 
   // Memoized callback - prevents child re-renders
   const handleToggleTodo = useCallback((todoId: number) => {
-    setTodos(prevTodos =>
-      prevTodos.map(todo =>
-        todo.id === todoId
-          ? { ...todo, completed: !todo.completed }
-          : todo
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
       )
     );
   }, []); // Empty dependency array since setTodos is stable
 
   // Memoized callback with dependencies
-  const handleFilterChange = useCallback((newFilter: 'all' | 'active' | 'completed') => {
-    console.log('Filter changed to:', newFilter);
-    setFilter(newFilter);
-  }, []);
+  const handleFilterChange = useCallback(
+    (newFilter: "all" | "active" | "completed") => {
+      console.log("Filter changed to:", newFilter);
+      setFilter(newFilter);
+    },
+    []
+  );
 
   // Memoized filtered todos
   const filteredTodos = useMemo(() => {
     switch (filter) {
-      case 'active':
-        return todos.filter(todo => !todo.completed);
-      case 'completed':
-        return todos.filter(todo => todo.completed);
+      case "active":
+        return todos.filter((todo) => !todo.completed);
+      case "completed":
+        return todos.filter((todo) => todo.completed);
       default:
         return todos;
     }
@@ -3248,40 +3280,40 @@ function TodoList({ todos }: TodoListProps) {
         currentFilter={filter}
         onFilterChange={handleFilterChange}
       />
-      {filteredTodos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          onToggle={handleToggleTodo}
-        />
+      {filteredTodos.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} onToggle={handleToggleTodo} />
       ))}
     </div>
   );
 }
 
 // Child component that benefits from memoized props
-const TodoItem = React.memo(({ 
-  todo, 
-  onToggle 
-}: {
-  todo: { id: number; text: string; completed: boolean };
-  onToggle: (id: number) => void;
-}) => {
-  console.log('TodoItem rendered:', todo.text);
-  
-  return (
-    <div>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => onToggle(todo.id)}
-      />
-      <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
-        {todo.text}
-      </span>
-    </div>
-  );
-});
+const TodoItem = React.memo(
+  ({
+    todo,
+    onToggle,
+  }: {
+    todo: { id: number; text: string; completed: boolean };
+    onToggle: (id: number) => void;
+  }) => {
+    console.log("TodoItem rendered:", todo.text);
+
+    return (
+      <div>
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={() => onToggle(todo.id)}
+        />
+        <span
+          style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+        >
+          {todo.text}
+        </span>
+      </div>
+    );
+  }
+);
 ```
 
 **When to use each:**
@@ -3291,12 +3323,13 @@ const TodoItem = React.memo(({
 - **useCallback**: For functions passed as props to memoized components
 
 **Anti-patterns to avoid:**
+
 ```tsx
 // ❌ Don't memoize everything
 const OverOptimized = React.memo(() => {
   const simpleValue = useMemo(() => 1 + 1, []); // Unnecessary
   const simpleCallback = useCallback(() => {
-    console.log('hello');
+    console.log("hello");
   }, []); // May not be worth it
 
   return <div>{simpleValue}</div>;
@@ -3322,6 +3355,7 @@ const WellOptimized = () => {
 Here are advanced TypeScript patterns for React development with proper type safety and reusability.
 
 **Generic Components:**
+
 ```tsx
 // Generic List Component
 interface ListItem {
@@ -3339,7 +3373,7 @@ function List<T extends ListItem>({
   items,
   renderItem,
   keyExtractor = (item) => item.id,
-  emptyMessage = 'No items found'
+  emptyMessage = "No items found",
 }: ListProps<T>) {
   if (items.length === 0) {
     return <div className="empty-state">{emptyMessage}</div>;
@@ -3370,13 +3404,9 @@ interface Product {
 }
 
 function App() {
-  const users: User[] = [
-    { id: 1, name: 'John', email: 'john@example.com' }
-  ];
+  const users: User[] = [{ id: 1, name: "John", email: "john@example.com" }];
 
-  const products: Product[] = [
-    { id: 'prod-1', title: 'Laptop', price: 999 }
-  ];
+  const products: Product[] = [{ id: "prod-1", title: "Laptop", price: 999 }];
 
   return (
     <div>
@@ -3406,6 +3436,7 @@ function App() {
 ```
 
 **Advanced Hook Types:**
+
 ```tsx
 // Custom hook with proper TypeScript
 interface UseApiResult<T> {
@@ -3424,17 +3455,17 @@ function useApi<T>(url: string, options?: RequestInit): UseApiResult<T> {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(url, options);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -3456,9 +3487,12 @@ interface ApiUser {
 }
 
 function UserProfile({ userId }: { userId: number }) {
-  const { data: user, loading, error, refetch } = useApi<ApiUser>(
-    `/api/users/${userId}`
-  );
+  const {
+    data: user,
+    loading,
+    error,
+    refetch,
+  } = useApi<ApiUser>(`/api/users/${userId}`);
 
   if (loading) return <div>Loading user...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -3476,6 +3510,7 @@ function UserProfile({ userId }: { userId: number }) {
 ```
 
 **Form Handling with TypeScript:**
+
 ```tsx
 // Type-safe form handling
 interface FormData {
@@ -3489,12 +3524,12 @@ type FormErrors = Partial<Record<keyof FormData, string>>;
 interface UseFormResult<T> {
   values: T;
   errors: Partial<Record<keyof T, string>>;
-  handleChange: (field: keyof T) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void;
-  handleSubmit: (onSubmit: (values: T) => void) => (
-    event: React.FormEvent
-  ) => void;
+  handleChange: (
+    field: keyof T
+  ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (
+    onSubmit: (values: T) => void
+  ) => (event: React.FormEvent) => void;
   setFieldError: (field: keyof T, error: string) => void;
   clearErrors: () => void;
 }
@@ -3506,42 +3541,44 @@ function useForm<T extends Record<string, any>>(
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
 
-  const handleChange = useCallback((field: keyof T) => 
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback(
+    (field: keyof T) => (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value, type, checked } = event.target;
-      setValues(prev => ({
+      setValues((prev) => ({
         ...prev,
-        [field]: type === 'checkbox' ? checked : value
+        [field]: type === "checkbox" ? checked : value,
       }));
-      
+
       // Clear error when user starts typing
       if (errors[field]) {
-        setErrors(prev => ({ ...prev, [field]: undefined }));
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
-    }, [errors]
+    },
+    [errors]
   );
 
   const setFieldError = useCallback((field: keyof T, error: string) => {
-    setErrors(prev => ({ ...prev, [field]: error }));
+    setErrors((prev) => ({ ...prev, [field]: error }));
   }, []);
 
   const clearErrors = useCallback(() => {
     setErrors({});
   }, []);
 
-  const handleSubmit = useCallback((onSubmit: (values: T) => void) => 
-    (event: React.FormEvent) => {
+  const handleSubmit = useCallback(
+    (onSubmit: (values: T) => void) => (event: React.FormEvent) => {
       event.preventDefault();
-      
+
       const validationErrors = validator?.(values) || {};
-      
+
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
-      
+
       onSubmit(values);
-    }, [values, validator]
+    },
+    [values, validator]
   );
 
   return {
@@ -3550,7 +3587,7 @@ function useForm<T extends Record<string, any>>(
     handleChange,
     handleSubmit,
     setFieldError,
-    clearErrors
+    clearErrors,
   };
 }
 
@@ -3558,49 +3595,44 @@ function useForm<T extends Record<string, any>>(
 function LoginForm() {
   const validateForm = (values: FormData): FormErrors => {
     const errors: FormErrors = {};
-    
+
     if (!values.email) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-      errors.email = 'Email is invalid';
+      errors.email = "Email is invalid";
     }
-    
+
     if (!values.password) {
-      errors.password = 'Password is required';
+      errors.password = "Password is required";
     } else if (values.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = "Password must be at least 6 characters";
     }
-    
+
     return errors;
   };
 
-  const {
-    values,
-    errors,
-    handleChange,
-    handleSubmit,
-    setFieldError
-  } = useForm<FormData>(
-    { email: '', password: '', rememberMe: false },
-    validateForm
-  );
+  const { values, errors, handleChange, handleSubmit, setFieldError } =
+    useForm<FormData>(
+      { email: "", password: "", rememberMe: false },
+      validateForm
+    );
 
   const onSubmit = async (formData: FormData) => {
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        setFieldError('email', 'Invalid credentials');
+        setFieldError("email", "Invalid credentials");
         return;
       }
 
-      console.log('Login successful!');
+      console.log("Login successful!");
     } catch (error) {
-      setFieldError('email', 'Network error occurred');
+      setFieldError("email", "Network error occurred");
     }
   };
 
@@ -3612,7 +3644,7 @@ function LoginForm() {
           id="email"
           type="email"
           value={values.email}
-          onChange={handleChange('email')}
+          onChange={handleChange("email")}
         />
         {errors.email && <span className="error">{errors.email}</span>}
       </div>
@@ -3623,7 +3655,7 @@ function LoginForm() {
           id="password"
           type="password"
           value={values.password}
-          onChange={handleChange('password')}
+          onChange={handleChange("password")}
         />
         {errors.password && <span className="error">{errors.password}</span>}
       </div>
@@ -3633,7 +3665,7 @@ function LoginForm() {
           <input
             type="checkbox"
             checked={values.rememberMe}
-            onChange={handleChange('rememberMe')}
+            onChange={handleChange("rememberMe")}
           />
           Remember me
         </label>
@@ -3646,10 +3678,11 @@ function LoginForm() {
 ```
 
 **Component Props with Variants:**
+
 ```tsx
 // Button component with variants
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
+type ButtonSize = "sm" | "md" | "lg";
 
 interface BaseButtonProps {
   variant?: ButtonVariant;
@@ -3659,31 +3692,36 @@ interface BaseButtonProps {
   children: React.ReactNode;
 }
 
-type ButtonProps = BaseButtonProps & 
+type ButtonProps = BaseButtonProps &
   React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ 
-    variant = 'primary', 
-    size = 'md', 
-    loading = false, 
-    disabled = false, 
-    children, 
-    className = '',
-    ...rest 
-  }, ref) => {
-    const baseClasses = 'btn';
+  (
+    {
+      variant = "primary",
+      size = "md",
+      loading = false,
+      disabled = false,
+      children,
+      className = "",
+      ...rest
+    },
+    ref
+  ) => {
+    const baseClasses = "btn";
     const variantClasses = `btn--${variant}`;
     const sizeClasses = `btn--${size}`;
-    const loadingClasses = loading ? 'btn--loading' : '';
-    
+    const loadingClasses = loading ? "btn--loading" : "";
+
     const buttonClasses = [
       baseClasses,
       variantClasses,
       sizeClasses,
       loadingClasses,
-      className
-    ].filter(Boolean).join(' ');
+      className,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     return (
       <button
@@ -3692,30 +3730,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...rest}
       >
-        {loading ? (
-          <span>Loading...</span>
-        ) : (
-          children
-        )}
+        {loading ? <span>Loading...</span> : children}
       </button>
     );
   }
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 // Usage
 function App() {
   return (
     <div>
-      <Button variant="primary" size="lg" onClick={() => console.log('Primary clicked')}>
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={() => console.log("Primary clicked")}
+      >
         Primary Button
       </Button>
-      
+
       <Button variant="danger" loading>
         Deleting...
       </Button>
-      
+
       <Button variant="outline" disabled>
         Disabled Button
       </Button>
@@ -3738,6 +3776,7 @@ function App() {
 React Testing Library with TypeScript provides excellent tools for testing React components in a way that resembles how users interact with your application.
 
 **Basic Component Testing:**
+
 ```tsx
 // UserCard.tsx
 interface User {
@@ -3758,8 +3797,8 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
     <div data-testid={`user-card-${user.id}`}>
       <h3>{user.name}</h3>
       <p>{user.email}</p>
-      <span className={user.isActive ? 'active' : 'inactive'}>
-        {user.isActive ? 'Active' : 'Inactive'}
+      <span className={user.isActive ? "active" : "inactive"}>
+        {user.isActive ? "Active" : "Inactive"}
       </span>
       <button onClick={() => onEdit(user.id)}>Edit</button>
       <button onClick={() => onDelete(user.id)}>Delete</button>
@@ -3768,17 +3807,17 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 }
 
 // UserCard.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { UserCard } from './UserCard';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { UserCard } from "./UserCard";
 
 const mockUser: User = {
   id: 1,
-  name: 'John Doe',
-  email: 'john@example.com',
-  isActive: true
+  name: "John Doe",
+  email: "john@example.com",
+  isActive: true,
 };
 
-describe('UserCard', () => {
+describe("UserCard", () => {
   const mockOnEdit = jest.fn();
   const mockOnDelete = jest.fn();
 
@@ -3787,68 +3826,57 @@ describe('UserCard', () => {
     mockOnDelete.mockClear();
   });
 
-  it('renders user information correctly', () => {
+  it("renders user information correctly", () => {
     render(
-      <UserCard 
-        user={mockUser} 
-        onEdit={mockOnEdit} 
-        onDelete={mockOnDelete} 
-      />
+      <UserCard user={mockUser} onEdit={mockOnEdit} onDelete={mockOnDelete} />
     );
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('john@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("john@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
-  it('calls onEdit when edit button is clicked', () => {
+  it("calls onEdit when edit button is clicked", () => {
     render(
-      <UserCard 
-        user={mockUser} 
-        onEdit={mockOnEdit} 
-        onDelete={mockOnDelete} 
-      />
+      <UserCard user={mockUser} onEdit={mockOnEdit} onDelete={mockOnDelete} />
     );
 
-    fireEvent.click(screen.getByText('Edit'));
+    fireEvent.click(screen.getByText("Edit"));
     expect(mockOnEdit).toHaveBeenCalledWith(1);
     expect(mockOnEdit).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onDelete when delete button is clicked', () => {
+  it("calls onDelete when delete button is clicked", () => {
     render(
-      <UserCard 
-        user={mockUser} 
-        onEdit={mockOnEdit} 
-        onDelete={mockOnDelete} 
-      />
+      <UserCard user={mockUser} onEdit={mockOnEdit} onDelete={mockOnDelete} />
     );
 
-    fireEvent.click(screen.getByText('Delete'));
+    fireEvent.click(screen.getByText("Delete"));
     expect(mockOnDelete).toHaveBeenCalledWith(1);
   });
 
-  it('displays correct status for inactive user', () => {
+  it("displays correct status for inactive user", () => {
     const inactiveUser = { ...mockUser, isActive: false };
-    
+
     render(
-      <UserCard 
-        user={inactiveUser} 
-        onEdit={mockOnEdit} 
-        onDelete={mockOnDelete} 
+      <UserCard
+        user={inactiveUser}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
       />
     );
 
-    expect(screen.getByText('Inactive')).toBeInTheDocument();
-    expect(screen.getByText('Inactive')).toHaveClass('inactive');
+    expect(screen.getByText("Inactive")).toBeInTheDocument();
+    expect(screen.getByText("Inactive")).toHaveClass("inactive");
   });
 });
 ```
 
 **Testing Custom Hooks:**
+
 ```tsx
 // useCounter.ts
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 interface UseCounterResult {
   count: number;
@@ -3862,11 +3890,11 @@ export function useCounter(initialValue: number = 0): UseCounterResult {
   const [count, setCount] = useState(initialValue);
 
   const increment = useCallback(() => {
-    setCount(prev => prev + 1);
+    setCount((prev) => prev + 1);
   }, []);
 
   const decrement = useCallback(() => {
-    setCount(prev => prev - 1);
+    setCount((prev) => prev - 1);
   }, []);
 
   const reset = useCallback(() => {
@@ -3878,81 +3906,82 @@ export function useCounter(initialValue: number = 0): UseCounterResult {
     increment,
     decrement,
     reset,
-    setCount
+    setCount,
   };
 }
 
 // useCounter.test.ts
-import { renderHook, act } from '@testing-library/react';
-import { useCounter } from './useCounter';
+import { renderHook, act } from "@testing-library/react";
+import { useCounter } from "./useCounter";
 
-describe('useCounter', () => {
-  it('initializes with default value', () => {
+describe("useCounter", () => {
+  it("initializes with default value", () => {
     const { result } = renderHook(() => useCounter());
     expect(result.current.count).toBe(0);
   });
 
-  it('initializes with custom value', () => {
+  it("initializes with custom value", () => {
     const { result } = renderHook(() => useCounter(10));
     expect(result.current.count).toBe(10);
   });
 
-  it('increments count', () => {
+  it("increments count", () => {
     const { result } = renderHook(() => useCounter(5));
-    
+
     act(() => {
       result.current.increment();
     });
-    
+
     expect(result.current.count).toBe(6);
   });
 
-  it('decrements count', () => {
+  it("decrements count", () => {
     const { result } = renderHook(() => useCounter(5));
-    
+
     act(() => {
       result.current.decrement();
     });
-    
+
     expect(result.current.count).toBe(4);
   });
 
-  it('resets to initial value', () => {
+  it("resets to initial value", () => {
     const { result } = renderHook(() => useCounter(10));
-    
+
     act(() => {
       result.current.increment();
       result.current.increment();
     });
-    
+
     expect(result.current.count).toBe(12);
-    
+
     act(() => {
       result.current.reset();
     });
-    
+
     expect(result.current.count).toBe(10);
   });
 
-  it('sets count to specific value', () => {
+  it("sets count to specific value", () => {
     const { result } = renderHook(() => useCounter());
-    
+
     act(() => {
       result.current.setCount(25);
     });
-    
+
     expect(result.current.count).toBe(25);
   });
 });
 ```
 
 **Testing Components with Context:**
+
 ```tsx
 // AuthContext.tsx
 interface User {
   id: string;
   name: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
 }
 
 interface AuthContextType {
@@ -3975,7 +4004,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
@@ -3987,7 +4016,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 }
@@ -4010,66 +4039,59 @@ export function AdminPanel() {
 }
 
 // AdminPanel.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { AuthProvider } from './AuthContext';
-import { AdminPanel } from './AdminPanel';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { AuthProvider } from "./AuthContext";
+import { AdminPanel } from "./AdminPanel";
 
 const renderWithAuth = (ui: React.ReactElement, { user = null } = {}) => {
   function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    );
+    return <AuthProvider>{children}</AuthProvider>;
   }
 
   const result = render(ui, { wrapper: Wrapper });
-  
+
   // If user is provided, log them in
   if (user) {
-    const authContext = result.container.querySelector('[data-testid="auth-provider"]');
+    const authContext = result.container.querySelector(
+      '[data-testid="auth-provider"]'
+    );
     // In real implementation, you'd expose the login function through a test helper
   }
-  
+
   return result;
 };
 
 // Custom render helper with authenticated user
-const renderWithAuthenticatedUser = (
-  ui: React.ReactElement, 
-  user: User
-) => {
+const renderWithAuthenticatedUser = (ui: React.ReactElement, user: User) => {
   function AuthWrapper({ children }: { children: React.ReactNode }) {
     return (
       <AuthProvider>
-        <div data-testid="auth-wrapper">
-          {children}
-        </div>
+        <div data-testid="auth-wrapper">{children}</div>
       </AuthProvider>
     );
   }
 
   const result = render(ui, { wrapper: AuthWrapper });
-  
+
   // You would typically expose a way to set the user in tests
   // This is a simplified example
   return result;
 };
 
-describe('AdminPanel', () => {
+describe("AdminPanel", () => {
   const adminUser: User = {
-    id: '1',
-    name: 'Admin User',
-    role: 'admin'
+    id: "1",
+    name: "Admin User",
+    role: "admin",
   };
 
   const regularUser: User = {
-    id: '2',
-    name: 'Regular User',
-    role: 'user'
+    id: "2",
+    name: "Regular User",
+    role: "user",
   };
 
-  it('denies access for non-admin users', () => {
+  it("denies access for non-admin users", () => {
     // This test would need proper setup with the context
     render(
       <AuthProvider>
@@ -4077,10 +4099,12 @@ describe('AdminPanel', () => {
       </AuthProvider>
     );
 
-    expect(screen.getByText('Access denied. Admin rights required.')).toBeInTheDocument();
+    expect(
+      screen.getByText("Access denied. Admin rights required.")
+    ).toBeInTheDocument();
   });
 
-  it('shows admin panel for admin users', () => {
+  it("shows admin panel for admin users", () => {
     // You would set up the authenticated admin user here
     // This is a simplified test structure
   });
@@ -4088,6 +4112,7 @@ describe('AdminPanel', () => {
 ```
 
 **Testing Async Components:**
+
 ```tsx
 // UserList.tsx
 interface User {
@@ -4104,14 +4129,14 @@ export function UserList() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users');
+        const response = await fetch("/api/users");
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error("Failed to fetch users");
         }
         const userData = await response.json();
         setUsers(userData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -4126,7 +4151,7 @@ export function UserList() {
   return (
     <div>
       <h1>Users</h1>
-      {users.map(user => (
+      {users.map((user) => (
         <div key={user.id} data-testid={`user-${user.id}`}>
           <h3>{user.name}</h3>
           <p>{user.email}</p>
@@ -4137,53 +4162,53 @@ export function UserList() {
 }
 
 // UserList.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import { UserList } from './UserList';
+import { render, screen, waitFor } from "@testing-library/react";
+import { UserList } from "./UserList";
 
 // Mock fetch
 global.fetch = jest.fn();
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 
 const mockUsers: User[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  { id: 1, name: "John Doe", email: "john@example.com" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com" },
 ];
 
-describe('UserList', () => {
+describe("UserList", () => {
   beforeEach(() => {
     mockFetch.mockClear();
   });
 
-  it('displays loading state initially', () => {
+  it("displays loading state initially", () => {
     mockFetch.mockReturnValue(
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve(mockUsers)
+        json: () => Promise.resolve(mockUsers),
       } as Response)
     );
 
     render(<UserList />);
-    expect(screen.getByText('Loading users...')).toBeInTheDocument();
+    expect(screen.getByText("Loading users...")).toBeInTheDocument();
   });
 
-  it('displays users after successful fetch', async () => {
+  it("displays users after successful fetch", async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockUsers)
+      json: () => Promise.resolve(mockUsers),
     } as Response);
 
     render(<UserList />);
 
     await waitFor(() => {
-      expect(screen.getByText('Users')).toBeInTheDocument();
+      expect(screen.getByText("Users")).toBeInTheDocument();
     });
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("jane@example.com")).toBeInTheDocument();
   });
 
-  it('displays error message on fetch failure', async () => {
-    mockFetch.mockRejectedValue(new Error('Network error'));
+  it("displays error message on fetch failure", async () => {
+    mockFetch.mockRejectedValue(new Error("Network error"));
 
     render(<UserList />);
 
@@ -4192,29 +4217,32 @@ describe('UserList', () => {
     });
   });
 
-  it('handles HTTP error responses', async () => {
+  it("handles HTTP error responses", async () => {
     mockFetch.mockResolvedValue({
       ok: false,
-      status: 404
+      status: 404,
     } as Response);
 
     render(<UserList />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Error: Failed to fetch users/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Error: Failed to fetch users/)
+      ).toBeInTheDocument();
     });
   });
 });
 ```
 
 **Test Setup Configuration:**
+
 ```typescript
 // setupTests.ts
-import '@testing-library/jest-dom';
-import { configure } from '@testing-library/react';
+import "@testing-library/jest-dom";
+import { configure } from "@testing-library/react";
 
 // Configure testing library
-configure({ testIdAttribute: 'data-testid' });
+configure({ testIdAttribute: "data-testid" });
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
@@ -4247,6 +4275,7 @@ global.ResizeObserver = class ResizeObserver {
 React applications can be vulnerable to several security threats. Here are the most common ones and how to prevent them:
 
 **1. Cross-Site Scripting (XSS):**
+
 ```tsx
 // ❌ Dangerous - allows XSS attacks
 interface UnsafeComponentProps {
@@ -4259,7 +4288,7 @@ function UnsafeComponent({ userContent }: UnsafeComponentProps) {
 }
 
 // ✅ Safe approaches
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 function SafeComponent({ userContent }: UnsafeComponentProps) {
   // Approach 1: Use React's built-in XSS protection
@@ -4282,6 +4311,7 @@ function CommentComponent({ comment }: { comment: string }) {
 ```
 
 **2. Dependency Vulnerabilities:**
+
 ```bash
 # Regular security audits
 npm audit
@@ -4297,6 +4327,7 @@ npm outdated
 ```
 
 **3. Environment Variables Security:**
+
 ```typescript
 // ❌ Don't expose sensitive data in client-side code
 const API_KEY = process.env.REACT_APP_SECRET_API_KEY; // Exposed to client!
@@ -4308,16 +4339,17 @@ const PUBLIC_API_URL = process.env.REACT_APP_PUBLIC_API_URL;
 // Keep sensitive data on the server
 // server-side API call
 async function getSecureData() {
-  const response = await fetch('/api/secure-endpoint', {
+  const response = await fetch("/api/secure-endpoint", {
     headers: {
-      'Authorization': `Bearer ${await getAuthToken()}` // Server-side token
-    }
+      Authorization: `Bearer ${await getAuthToken()}`, // Server-side token
+    },
   });
   return response.json();
 }
 ```
 
 **4. Authentication & Authorization:**
+
 ```tsx
 // Secure authentication implementation
 interface AuthToken {
@@ -4327,8 +4359,8 @@ interface AuthToken {
 }
 
 class AuthService {
-  private static readonly TOKEN_KEY = 'auth_token';
-  private static readonly REFRESH_KEY = 'refresh_token';
+  private static readonly TOKEN_KEY = "auth_token";
+  private static readonly REFRESH_KEY = "refresh_token";
 
   static setTokens(tokens: AuthToken): void {
     // Store tokens securely (consider httpOnly cookies for production)
@@ -4346,7 +4378,7 @@ class AuthService {
 
   static isTokenValid(token: string): boolean {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       return payload.exp * 1000 > Date.now();
     } catch {
       return false;
@@ -4358,10 +4390,10 @@ class AuthService {
     if (!refreshToken) return null;
 
     try {
-      const response = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken })
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
       });
 
       if (response.ok) {
@@ -4370,7 +4402,7 @@ class AuthService {
         return newTokens.token;
       }
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.error("Token refresh failed:", error);
     }
 
     return null;
@@ -4383,12 +4415,12 @@ class AuthService {
 }
 
 // Protected Route Component
-function ProtectedRoute({ 
-  children, 
-  requiredRole 
-}: { 
-  children: React.ReactNode; 
-  requiredRole?: string 
+function ProtectedRoute({
+  children,
+  requiredRole,
+}: {
+  children: React.ReactNode;
+  requiredRole?: string;
 }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -4405,26 +4437,29 @@ function ProtectedRoute({
 ```
 
 **5. CSRF Protection:**
+
 ```tsx
 // CSRF token handling
 function CSRFProtectedForm() {
-  const [csrfToken, setCsrfToken] = useState<string>('');
+  const [csrfToken, setCsrfToken] = useState<string>("");
 
   useEffect(() => {
     // Get CSRF token from meta tag or API
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    setCsrfToken(token || '');
+    const token = document
+      .querySelector('meta[name="csrf-token"]')
+      ?.getAttribute("content");
+    setCsrfToken(token || "");
   }, []);
 
   const handleSubmit = async (formData: any) => {
-    await fetch('/api/protected-endpoint', {
-      method: 'POST',
+    await fetch("/api/protected-endpoint", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken, // Include CSRF token
-        'Authorization': `Bearer ${AuthService.getToken()}`
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken, // Include CSRF token
+        Authorization: `Bearer ${AuthService.getToken()}`,
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     });
   };
 
@@ -4438,17 +4473,21 @@ function CSRFProtectedForm() {
 ```
 
 **6. Content Security Policy (CSP):**
+
 ```html
 <!-- Add to index.html -->
-<meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
+<meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self'; 
                script-src 'self' 'unsafe-inline' https://trusted-cdn.com; 
                style-src 'self' 'unsafe-inline'; 
                img-src 'self' data: https:; 
-               connect-src 'self' https://api.yourapp.com;">
+               connect-src 'self' https://api.yourapp.com;"
+/>
 ```
 
 **7. Input Validation:**
+
 ```tsx
 // Comprehensive input validation
 interface FormValidation {
@@ -4459,19 +4498,19 @@ interface FormValidation {
 
 const validation: FormValidation = {
   email: (value: string) => {
-    if (!value) return 'Email is required';
+    if (!value) return "Email is required";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return 'Please enter a valid email address';
+      return "Please enter a valid email address";
     }
-    if (value.length > 254) return 'Email is too long';
+    if (value.length > 254) return "Email is too long";
     return null;
   },
 
   password: (value: string) => {
-    if (!value) return 'Password is required';
-    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (!value) return "Password is required";
+    if (value.length < 8) return "Password must be at least 8 characters";
     if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
-      return 'Password must contain uppercase, lowercase, and number';
+      return "Password must contain uppercase, lowercase, and number";
     }
     return null;
   },
@@ -4480,22 +4519,22 @@ const validation: FormValidation = {
     if (!value) return null; // Optional field
     try {
       const url = new URL(value);
-      if (!['http:', 'https:'].includes(url.protocol)) {
-        return 'URL must use HTTP or HTTPS protocol';
+      if (!["http:", "https:"].includes(url.protocol)) {
+        return "URL must use HTTP or HTTPS protocol";
       }
       return null;
     } catch {
-      return 'Please enter a valid URL';
+      return "Please enter a valid URL";
     }
-  }
+  },
 };
 
 // Secure form component
 function SecureForm() {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    website: ''
+    email: "",
+    password: "",
+    website: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -4506,20 +4545,20 @@ function SecureForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Sanitize input
     const sanitizedValue = value.trim().slice(0, 1000); // Limit length
-    
-    setFormData(prev => ({ ...prev, [name]: sanitizedValue }));
-    
+
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
+
     // Real-time validation
     const error = validateField(name, sanitizedValue);
-    setErrors(prev => ({ ...prev, [name]: error || '' }));
+    setErrors((prev) => ({ ...prev, [name]: error || "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const newErrors: Record<string, string> = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -4549,9 +4588,13 @@ function SecureForm() {
           aria-invalid={!!errors.email}
           aria-describedby={errors.email ? "email-error" : undefined}
         />
-        {errors.email && <div id="email-error" role="alert">{errors.email}</div>}
+        {errors.email && (
+          <div id="email-error" role="alert">
+            {errors.email}
+          </div>
+        )}
       </div>
-      
+
       <div>
         <input
           type="password"
@@ -4564,7 +4607,7 @@ function SecureForm() {
         />
         {errors.password && <div role="alert">{errors.password}</div>}
       </div>
-      
+
       <button type="submit">Submit</button>
     </form>
   );
@@ -4581,6 +4624,7 @@ function SecureForm() {
 Accessibility is crucial for making React applications usable by everyone. Here are key techniques and patterns:
 
 **1. Semantic HTML and ARIA:**
+
 ```tsx
 // Good semantic structure
 interface NavigationProps {
@@ -4595,8 +4639,8 @@ function AccessibleNavigation({ items }: NavigationProps) {
           <li key={item.href}>
             <a
               href={item.href}
-              aria-current={item.current ? 'page' : undefined}
-              className={item.current ? 'current-page' : ''}
+              aria-current={item.current ? "page" : undefined}
+              className={item.current ? "current-page" : ""}
             >
               {item.label}
             </a>
@@ -4623,19 +4667,19 @@ function AccessibleModal({ isOpen, onClose, title, children }: ModalProps) {
     if (isOpen) {
       // Store current focus
       previousFocusRef.current = document.activeElement as HTMLElement;
-      
+
       // Focus modal
       modalRef.current?.focus();
-      
+
       // Trap focus within modal
       const trapFocus = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           onClose();
         }
       };
-      
-      document.addEventListener('keydown', trapFocus);
-      return () => document.removeEventListener('keydown', trapFocus);
+
+      document.addEventListener("keydown", trapFocus);
+      return () => document.removeEventListener("keydown", trapFocus);
     } else {
       // Return focus to previous element
       previousFocusRef.current?.focus();
@@ -4667,9 +4711,7 @@ function AccessibleModal({ isOpen, onClose, title, children }: ModalProps) {
             ×
           </button>
         </div>
-        <div className="modal-content">
-          {children}
-        </div>
+        <div className="modal-content">{children}</div>
       </div>
     </div>
   );
@@ -4677,12 +4719,13 @@ function AccessibleModal({ isOpen, onClose, title, children }: ModalProps) {
 ```
 
 **2. Form Accessibility:**
+
 ```tsx
 // Comprehensive accessible form
 interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'tel';
+  type: "text" | "email" | "password" | "tel";
   required?: boolean;
   placeholder?: string;
   autoComplete?: string;
@@ -4697,16 +4740,16 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const firstErrorRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Validate form
     const newErrors: Record<string, string> = {};
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (field.required && !formData[field.id]) {
         newErrors[field.id] = `${field.label} is required`;
       }
@@ -4723,17 +4766,17 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
     try {
       await onSubmit(formData);
     } catch (error) {
-      setErrors({ general: 'An error occurred while submitting the form' });
+      setErrors({ general: "An error occurred while submitting the form" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (fieldId: string, value: string) => {
-    setFormData(prev => ({ ...prev, [fieldId]: value }));
+    setFormData((prev) => ({ ...prev, [fieldId]: value }));
     // Clear error when user starts typing
     if (errors[fieldId]) {
-      setErrors(prev => ({ ...prev, [fieldId]: '' }));
+      setErrors((prev) => ({ ...prev, [fieldId]: "" }));
     }
   };
 
@@ -4741,7 +4784,7 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
     <form onSubmit={handleSubmit} noValidate>
       <fieldset disabled={isSubmitting}>
         <legend>Registration Form</legend>
-        
+
         {errors.general && (
           <div role="alert" className="error-message">
             {errors.general}
@@ -4754,21 +4797,27 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
               {field.label}
               {field.required && <span aria-label="required"> *</span>}
             </label>
-            
+
             <input
-              ref={index === 0 && Object.keys(errors).length > 0 ? firstErrorRef : null}
+              ref={
+                index === 0 && Object.keys(errors).length > 0
+                  ? firstErrorRef
+                  : null
+              }
               id={field.id}
               type={field.type}
-              value={formData[field.id] || ''}
+              value={formData[field.id] || ""}
               onChange={(e) => handleChange(field.id, e.target.value)}
               placeholder={field.placeholder}
               autoComplete={field.autoComplete}
               required={field.required}
               aria-invalid={!!errors[field.id]}
-              aria-describedby={errors[field.id] ? `${field.id}-error` : undefined}
-              className={errors[field.id] ? 'error' : ''}
+              aria-describedby={
+                errors[field.id] ? `${field.id}-error` : undefined
+              }
+              className={errors[field.id] ? "error" : ""}
             />
-            
+
             {errors[field.id] && (
               <div
                 id={`${field.id}-error`}
@@ -4786,9 +4835,9 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
           disabled={isSubmitting}
           aria-describedby={isSubmitting ? "submit-status" : undefined}
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          {isSubmitting ? "Submitting..." : "Submit"}
         </button>
-        
+
         {isSubmitting && (
           <div id="submit-status" aria-live="polite" className="sr-only">
             Form is being submitted
@@ -4801,6 +4850,7 @@ function AccessibleForm({ fields, onSubmit }: AccessibleFormProps) {
 ```
 
 **3. Focus Management:**
+
 ```tsx
 // Custom hook for focus management
 function useFocusTrap(isActive: boolean) {
@@ -4820,7 +4870,7 @@ function useFocusTrap(isActive: boolean) {
     const lastElement = focusableElements[focusableElements.length - 1];
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstElement) {
             lastElement.focus();
@@ -4835,11 +4885,11 @@ function useFocusTrap(isActive: boolean) {
       }
     };
 
-    document.addEventListener('keydown', handleTabKey);
+    document.addEventListener("keydown", handleTabKey);
     firstElement?.focus();
 
     return () => {
-      document.removeEventListener('keydown', handleTabKey);
+      document.removeEventListener("keydown", handleTabKey);
     };
   }, [isActive]);
 
@@ -4862,27 +4912,31 @@ function SkipLinks() {
 ```
 
 **4. Screen Reader Support:**
+
 ```tsx
 // Live regions for dynamic content
 function useAnnouncement() {
-  const [announcement, setAnnouncement] = useState('');
+  const [announcement, setAnnouncement] = useState("");
 
   const announce = useCallback((message: string) => {
     setAnnouncement(message);
     // Clear after announcement
-    setTimeout(() => setAnnouncement(''), 1000);
+    setTimeout(() => setAnnouncement(""), 1000);
   }, []);
 
-  const AnnouncementRegion = useCallback(() => (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      className="sr-only"
-    >
-      {announcement}
-    </div>
-  ), [announcement]);
+  const AnnouncementRegion = useCallback(
+    () => (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
+    ),
+    [announcement]
+  );
 
   return { announce, AnnouncementRegion };
 }
@@ -4892,7 +4946,7 @@ interface TableData {
   id: string;
   name: string;
   email: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
 }
 
 interface AccessibleTableProps {
@@ -4904,7 +4958,7 @@ function AccessibleTable({ data, caption }: AccessibleTableProps) {
   const { announce, AnnouncementRegion } = useAnnouncement();
 
   const handleStatusToggle = (userId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
     // Update logic here
     announce(`User status changed to ${newStatus}`);
   };
@@ -4915,10 +4969,18 @@ function AccessibleTable({ data, caption }: AccessibleTableProps) {
         <caption>{caption}</caption>
         <thead>
           <tr>
-            <th scope="col" id="name-header">Name</th>
-            <th scope="col" id="email-header">Email</th>
-            <th scope="col" id="status-header">Status</th>
-            <th scope="col" id="actions-header">Actions</th>
+            <th scope="col" id="name-header">
+              Name
+            </th>
+            <th scope="col" id="email-header">
+              Email
+            </th>
+            <th scope="col" id="status-header">
+              Status
+            </th>
+            <th scope="col" id="actions-header">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -4939,8 +5001,8 @@ function AccessibleTable({ data, caption }: AccessibleTableProps) {
                   Toggle Status
                 </button>
                 <div id={`status-description-${user.id}`} className="sr-only">
-                  Current status: {user.status}. Click to change to{' '}
-                  {user.status === 'active' ? 'inactive' : 'active'}
+                  Current status: {user.status}. Click to change to{" "}
+                  {user.status === "active" ? "inactive" : "active"}
                 </div>
               </td>
             </tr>
@@ -4954,6 +5016,7 @@ function AccessibleTable({ data, caption }: AccessibleTableProps) {
 ```
 
 **5. CSS for Accessibility:**
+
 ```css
 /* Screen reader only content */
 .sr-only {
@@ -5009,19 +5072,25 @@ function AccessibleTable({ data, caption }: AccessibleTableProps) {
 ```
 
 **6. Testing Accessibility:**
+
 ```tsx
 // Accessibility testing utilities
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe, toHaveNoViolations } from "jest-axe";
 
 expect.extend(toHaveNoViolations);
 
-describe('AccessibleForm', () => {
-  it('should have no accessibility violations', async () => {
+describe("AccessibleForm", () => {
+  it("should have no accessibility violations", async () => {
     const { container } = render(
-      <AccessibleForm 
+      <AccessibleForm
         fields={[
-          { id: 'email', label: 'Email', type: 'email', required: true },
-          { id: 'password', label: 'Password', type: 'password', required: true }
+          { id: "email", label: "Email", type: "email", required: true },
+          {
+            id: "password",
+            label: "Password",
+            type: "password",
+            required: true,
+          },
         ]}
         onSubmit={jest.fn()}
       />
@@ -5031,18 +5100,18 @@ describe('AccessibleForm', () => {
     expect(results).toHaveNoViolations();
   });
 
-  it('should have proper ARIA labels', () => {
+  it("should have proper ARIA labels", () => {
     render(
-      <AccessibleForm 
+      <AccessibleForm
         fields={[
-          { id: 'email', label: 'Email', type: 'email', required: true }
+          { id: "email", label: "Email", type: "email", required: true },
         ]}
         onSubmit={jest.fn()}
       />
     );
 
-    expect(screen.getByLabelText('Email *')).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+    expect(screen.getByLabelText("Email *")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /email/i })).toBeInTheDocument();
   });
 });
 ```
@@ -5072,7 +5141,9 @@ const AccordionContext = createContext<AccordionContextType | null>(null);
 function useAccordion() {
   const context = useContext(AccordionContext);
   if (!context) {
-    throw new Error('Accordion compound components must be used within Accordion');
+    throw new Error(
+      "Accordion compound components must be used within Accordion"
+    );
   }
   return context;
 }
@@ -5084,8 +5155,14 @@ interface AccordionProps {
   allowMultiple?: boolean;
 }
 
-function Accordion({ children, defaultActiveIndex = null, allowMultiple = false }: AccordionProps) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(defaultActiveIndex);
+function Accordion({
+  children,
+  defaultActiveIndex = null,
+  allowMultiple = false,
+}: AccordionProps) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(
+    defaultActiveIndex
+  );
 
   const handleSetActiveIndex = (index: number | null) => {
     if (allowMultiple) {
@@ -5096,7 +5173,9 @@ function Accordion({ children, defaultActiveIndex = null, allowMultiple = false 
   };
 
   return (
-    <AccordionContext.Provider value={{ activeIndex, setActiveIndex: handleSetActiveIndex }}>
+    <AccordionContext.Provider
+      value={{ activeIndex, setActiveIndex: handleSetActiveIndex }}
+    >
       <div className="accordion">{children}</div>
     </AccordionContext.Provider>
   );
@@ -5113,7 +5192,10 @@ function AccordionItem({ children, index }: AccordionItemProps) {
   const isActive = activeIndex === index;
 
   return (
-    <div className={`accordion-item ${isActive ? 'active' : ''}`} data-index={index}>
+    <div
+      className={`accordion-item ${isActive ? "active" : ""}`}
+      data-index={index}
+    >
       {children}
     </div>
   );
@@ -5131,14 +5213,14 @@ function AccordionHeader({ children }: AccordionHeaderProps) {
   useEffect(() => {
     // Find parent AccordionItem to get index
     let element = itemElement.current?.parentElement;
-    while (element && !element.hasAttribute('data-index')) {
+    while (element && !element.hasAttribute("data-index")) {
       element = element.parentElement;
     }
     itemElement.current = element as HTMLElement;
   }, []);
 
   const handleClick = () => {
-    const index = itemElement.current?.getAttribute('data-index');
+    const index = itemElement.current?.getAttribute("data-index");
     if (index !== null && index !== undefined) {
       setActiveIndex(parseInt(index));
     }
@@ -5168,12 +5250,12 @@ function AccordionPanel({ children }: AccordionPanelProps) {
 
   useEffect(() => {
     let element = itemElement.current?.parentElement;
-    while (element && !element.hasAttribute('data-index')) {
+    while (element && !element.hasAttribute("data-index")) {
       element = element.parentElement;
     }
-    
+
     if (element) {
-      const index = parseInt(element.getAttribute('data-index') || '0');
+      const index = parseInt(element.getAttribute("data-index") || "0");
       setIsActive(activeIndex === index);
     }
   }, [activeIndex]);
@@ -5181,9 +5263,9 @@ function AccordionPanel({ children }: AccordionPanelProps) {
   return (
     <div
       ref={itemElement as any}
-      className={`accordion-panel ${isActive ? 'expanded' : ''}`}
+      className={`accordion-panel ${isActive ? "expanded" : ""}`}
       style={{
-        display: isActive ? 'block' : 'none',
+        display: isActive ? "block" : "none",
       }}
     >
       {children}
@@ -5210,14 +5292,16 @@ function App() {
       <Accordion.Item index={1}>
         <Accordion.Header>What is TypeScript?</Accordion.Header>
         <Accordion.Panel>
-          TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
+          TypeScript is a typed superset of JavaScript that compiles to plain
+          JavaScript.
         </Accordion.Panel>
       </Accordion.Item>
 
       <Accordion.Item index={2}>
         <Accordion.Header>What are React Hooks?</Accordion.Header>
         <Accordion.Panel>
-          Hooks are functions that let you use state and other React features without writing a class.
+          Hooks are functions that let you use state and other React features
+          without writing a class.
         </Accordion.Panel>
       </Accordion.Item>
     </Accordion>
@@ -5241,9 +5325,9 @@ interface TabsProviderProps {
   defaultTab?: string;
 }
 
-function TabsProvider({ children, defaultTab = '' }: TabsProviderProps) {
+function TabsProvider({ children, defaultTab = "" }: TabsProviderProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
-  
+
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
       {children}
@@ -5270,7 +5354,11 @@ interface TabListProps {
 }
 
 function TabList({ children }: TabListProps) {
-  return <div className="tab-list" role="tablist">{children}</div>;
+  return (
+    <div className="tab-list" role="tablist">
+      {children}
+    </div>
+  );
 }
 
 interface TabProps {
@@ -5281,8 +5369,8 @@ interface TabProps {
 
 function Tab({ tabId, children, disabled = false }: TabProps) {
   const context = useContext(TabsContext);
-  if (!context) throw new Error('Tab must be used within Tabs');
-  
+  if (!context) throw new Error("Tab must be used within Tabs");
+
   const { activeTab, setActiveTab } = context;
   const isActive = activeTab === tabId;
 
@@ -5292,7 +5380,7 @@ function Tab({ tabId, children, disabled = false }: TabProps) {
       aria-selected={isActive}
       aria-controls={`panel-${tabId}`}
       id={`tab-${tabId}`}
-      className={`tab ${isActive ? 'active' : ''}`}
+      className={`tab ${isActive ? "active" : ""}`}
       onClick={() => !disabled && setActiveTab(tabId)}
       disabled={disabled}
       type="button"
@@ -5317,8 +5405,8 @@ interface TabPanelProps {
 
 function TabPanel({ tabId, children }: TabPanelProps) {
   const context = useContext(TabsContext);
-  if (!context) throw new Error('TabPanel must be used within Tabs');
-  
+  if (!context) throw new Error("TabPanel must be used within Tabs");
+
   const { activeTab } = context;
   const isActive = activeTab === tabId;
 
@@ -5327,7 +5415,7 @@ function TabPanel({ tabId, children }: TabPanelProps) {
       role="tabpanel"
       id={`panel-${tabId}`}
       aria-labelledby={`tab-${tabId}`}
-      className={`tab-panel ${isActive ? 'active' : ''}`}
+      className={`tab-panel ${isActive ? "active" : ""}`}
       hidden={!isActive}
     >
       {isActive ? children : null}
@@ -5350,20 +5438,22 @@ function TabExample() {
       <TabsCompound.List>
         <TabsCompound.Tab tabId="profile">Profile</TabsCompound.Tab>
         <TabsCompound.Tab tabId="settings">Settings</TabsCompound.Tab>
-        <TabsCompound.Tab tabId="billing" disabled>Billing</TabsCompound.Tab>
+        <TabsCompound.Tab tabId="billing" disabled>
+          Billing
+        </TabsCompound.Tab>
       </TabsCompound.List>
-      
+
       <TabsCompound.Panels>
         <TabsCompound.Panel tabId="profile">
           <h3>Profile Content</h3>
           <p>Manage your profile information here.</p>
         </TabsCompound.Panel>
-        
+
         <TabsCompound.Panel tabId="settings">
           <h3>Settings Content</h3>
           <p>Adjust your application settings.</p>
         </TabsCompound.Panel>
-        
+
         <TabsCompound.Panel tabId="billing">
           <h3>Billing Content</h3>
           <p>Manage your billing information.</p>
@@ -5377,6 +5467,7 @@ export default TabsCompound;
 ```
 
 **Benefits of Compound Components:**
+
 - **Flexible API**: Users can compose components however they need
 - **Separation of Concerns**: Each component has a single responsibility
 - **Implicit State Sharing**: Context eliminates prop drilling
@@ -5417,11 +5508,11 @@ class MouseTracker extends React.Component<MouseTrackerProps, MousePosition> {
   };
 
   componentDidMount() {
-    window.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener("mousemove", this.handleMouseMove);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('mousemove', this.handleMouseMove);
+    window.removeEventListener("mousemove", this.handleMouseMove);
   }
 
   render() {
@@ -5442,17 +5533,19 @@ function App() {
       {({ x, y }) => (
         <div>
           <h1>Mouse Position</h1>
-          <p>X: {x}, Y: {y}</p>
+          <p>
+            X: {x}, Y: {y}
+          </p>
           <div
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: x,
               top: y,
               width: 10,
               height: 10,
-              backgroundColor: 'red',
-              borderRadius: '50%',
-              pointerEvents: 'none',
+              backgroundColor: "red",
+              borderRadius: "50%",
+              pointerEvents: "none",
             }}
           />
         </div>
@@ -5495,7 +5588,7 @@ class DataFetcher<T> extends React.Component<
 
   fetchData = async () => {
     this.setState({ loading: true, error: null });
-    
+
     try {
       const response = await fetch(this.props.url);
       if (!response.ok) {
@@ -5504,9 +5597,9 @@ class DataFetcher<T> extends React.Component<
       const data = await response.json();
       this.setState({ data, loading: false });
     } catch (error) {
-      this.setState({ 
-        error: error instanceof Error ? error : new Error('Unknown error'),
-        loading: false 
+      this.setState({
+        error: error instanceof Error ? error : new Error("Unknown error"),
+        loading: false,
       });
     }
   };
@@ -5548,7 +5641,10 @@ function UserProfile({ userId }: { userId: number }) {
 ```tsx
 // Custom hook version of mouse tracker
 function useMousePosition(): MousePosition {
-  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition>({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -5558,8 +5654,8 @@ function useMousePosition(): MousePosition {
       });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return mousePosition;
@@ -5574,8 +5670,8 @@ function useApi<T>(url: string): DataFetcherState<T> & { refetch: () => void } {
   });
 
   const fetchData = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    
+    setState((prev) => ({ ...prev, loading: true, error: null }));
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -5584,10 +5680,10 @@ function useApi<T>(url: string): DataFetcherState<T> & { refetch: () => void } {
       const data = await response.json();
       setState({ data, loading: false, error: null });
     } catch (error) {
-      setState({ 
+      setState({
         data: null,
         loading: false,
-        error: error instanceof Error ? error : new Error('Unknown error')
+        error: error instanceof Error ? error : new Error("Unknown error"),
       });
     }
   }, [url]);
@@ -5606,17 +5702,19 @@ function App() {
   return (
     <div>
       <h1>Mouse Position</h1>
-      <p>X: {mousePosition.x}, Y: {mousePosition.y}</p>
+      <p>
+        X: {mousePosition.x}, Y: {mousePosition.y}
+      </p>
       <div
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: mousePosition.x,
           top: mousePosition.y,
           width: 10,
           height: 10,
-          backgroundColor: 'red',
-          borderRadius: '50%',
-          pointerEvents: 'none',
+          backgroundColor: "red",
+          borderRadius: "50%",
+          pointerEvents: "none",
         }}
       />
     </div>
@@ -5624,15 +5722,21 @@ function App() {
 }
 
 function UserProfile({ userId }: { userId: number }) {
-  const { data: user, loading, error, refetch } = useApi<User>(`/api/users/${userId}`);
+  const {
+    data: user,
+    loading,
+    error,
+    refetch,
+  } = useApi<User>(`/api/users/${userId}`);
 
   if (loading) return <div>Loading user...</div>;
-  if (error) return (
-    <div>
-      Error: {error.message}
-      <button onClick={refetch}>Retry</button>
-    </div>
-  );
+  if (error)
+    return (
+      <div>
+        Error: {error.message}
+        <button onClick={refetch}>Retry</button>
+      </div>
+    );
   if (!user) return <div>User not found</div>;
 
   return (
@@ -5693,7 +5797,7 @@ function Form<T extends Record<string, any>>({
 
   const handleChange = useCallback((field: keyof T) => (value: T[keyof T]) => {
     setValues(prev => ({ ...prev, [field]: value }));
-    
+
     if (touched[field]) {
       const error = validateField(field, value);
       setErrors(prev => ({ ...prev, [field]: error }));
@@ -5706,7 +5810,7 @@ function Form<T extends Record<string, any>>({
     setErrors(prev => ({ ...prev, [field]: error }));
   }, [values, validateField]);
 
-  const handleSubmit = useCallback((onSubmit: (values: T) => void) => 
+  const handleSubmit = useCallback((onSubmit: (values: T) => void) =>
     async (e: React.FormEvent) => {
       e.preventDefault();
       setIsSubmitting(true);
@@ -5827,17 +5931,18 @@ function LoginPage() {
 
 **Render Props vs Hooks Comparison:**
 
-| Feature | Render Props | Custom Hooks |
-|---------|--------------|--------------|
-| **Syntax** | More verbose | Cleaner, simpler |
-| **Reusability** | Good | Excellent |
-| **Composition** | Nested functions | Linear composition |
-| **TypeScript Support** | Complex generics | Better inference |
-| **Performance** | Can cause extra renders | More optimized |
-| **Learning Curve** | Steeper | Easier |
-| **Modern React** | Legacy pattern | Recommended approach |
+| Feature                | Render Props            | Custom Hooks         |
+| ---------------------- | ----------------------- | -------------------- |
+| **Syntax**             | More verbose            | Cleaner, simpler     |
+| **Reusability**        | Good                    | Excellent            |
+| **Composition**        | Nested functions        | Linear composition   |
+| **TypeScript Support** | Complex generics        | Better inference     |
+| **Performance**        | Can cause extra renders | More optimized       |
+| **Learning Curve**     | Steeper                 | Easier               |
+| **Modern React**       | Legacy pattern          | Recommended approach |
 
 **When to Use Each:**
+
 - **Render Props**: When you need very flexible component composition or working with class components
 - **Custom Hooks**: For most modern React applications, simpler logic sharing, and better performance
 
